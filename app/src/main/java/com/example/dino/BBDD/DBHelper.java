@@ -23,6 +23,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 "\tPRIMARY KEY(\"MaxScore\")\n" +
                 ")");
 
+        ContentValues values = new ContentValues();
+        values.put("MaxScore", 0);
+        sqLiteDatabase.insert("HighScore", null, values);
 
 
         System.out.println("Se creó la BBDD");
