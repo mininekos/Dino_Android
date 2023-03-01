@@ -21,7 +21,7 @@ public class TemporizadorScore extends Thread{
         while(runnig) {
             if (!pause) {
                 try {
-                    sleep(500);
+                    sleep(100);
                     tiempo++;
                 } catch (Exception e) {
                     e.printStackTrace();

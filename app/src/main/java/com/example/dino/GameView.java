@@ -8,6 +8,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -52,6 +54,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private final Object lock = new Object();
     private boolean gameOver=false;
     private DBHelper dbHelper;
+    private MediaPlayer media;
+    private SoundPool soundPool;
+    private int musicaDead;
+    private int musicaJump;
+    private int musicaScore;
 
 
     public GameView(Context context) {
@@ -60,7 +67,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         setBackgroundColor(Color.WHITE);
         this.context=context;
         dbHelper=new DBHelper(context);
+        media=MediaPlayer.create(context,R.raw.musica_fondo_reducida);
+        media.setLooping(true);
+        media.start();
 
+        soundPool=new SoundPool.Builder().setMaxStreams(1).build();
+        musicaDead=soundPool.load(context,R.raw.dead,1);
+        musicaJump=soundPool.load(context,R.raw.jump,1);
+        musicaScore=soundPool.load(context,R.raw.scoreup,1);
     }
 
     @Override
@@ -100,7 +114,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 }
             }
         }
-        
+
         //Cactus
         Iterator<Cactus> iterCactus = cactuses.iterator();
         while (iterCactus.hasNext()) {
@@ -117,6 +131,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
         //Colision
         if(hiloColision.isColision()){
+            soundPool.play(musicaDead,1,1,1,0,1);
             destroy();
             setHighScoreDB();
             gameOver=true;
@@ -136,6 +151,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         score.setScore(temporizadorScore.getTiempo());
+        if(score.getScore()%100==0 && score.getScore()!=0){
+            soundPool.play(musicaScore,1,1,1,0,1);
+        }
         score.onDraw(canvas,pText);
         highScore.onDraw(canvas,pText);
 
@@ -149,6 +167,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 if(!salto){
                     salto=true;
                     hiloDino.setJumping(true);
+                    soundPool.play(musicaJump,1,1,1,0,1);
                 }
                 if(gameOver && event.getX()>getWidth()/2-bmpRestart.getWidth()/2
                         && event.getX()<getWidth()/2+bmpRestart.getWidth()/2
@@ -186,7 +205,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-
+        destroy();
+        media.stop();
     }
 
     public ArrayList<Nube> getNubes() {
@@ -261,5 +281,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             dbHelper.updateHighScore(score.getScore());
             highScore.setScore(score.getScore());
         }
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 }

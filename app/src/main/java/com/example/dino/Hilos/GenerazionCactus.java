@@ -21,6 +21,7 @@ public class GenerazionCactus extends Thread{
     private Bitmap bmpCactus;
     private Random random;
     private Cactus cactus1;
+    private Random rnd;
 
 
 
@@ -31,7 +32,7 @@ public class GenerazionCactus extends Thread{
         this.gameView=gameView;
         random=new Random();
         cactus1=new Cactus(gameView, BitmapFactory.decodeResource(gameView.getResources(), R.drawable.cactus1));
-
+        random=new Random();
 
     }
 
@@ -51,7 +52,7 @@ public class GenerazionCactus extends Thread{
                     else
                         bmpCactus = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.cactus1);
                     cactus.add(cactus1.getCactus(gameView, bmpCactus));
-                    sleep(5000);
+                    sleep(random.nextInt(2000)+3000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

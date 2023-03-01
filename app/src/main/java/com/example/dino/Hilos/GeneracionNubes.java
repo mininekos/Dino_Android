@@ -9,6 +9,7 @@ import com.example.dino.POJOS.Nube;
 import com.example.dino.R;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GeneracionNubes extends Thread {
     private boolean runnig;
@@ -17,7 +18,7 @@ public class GeneracionNubes extends Thread {
     private GameView gameView;
     private Bitmap bmpNube;
     private Nube nube;
-
+    private Random rnd;
 
     public GeneracionNubes(GameView gameView ) {
         runnig = false;
@@ -26,6 +27,7 @@ public class GeneracionNubes extends Thread {
         this.bmpNube= BitmapFactory.decodeResource(gameView.getResources(), R.drawable.cloud);
         this.gameView = gameView;
         nube = new Nube(gameView, bmpNube);
+        rnd=new Random();
 
     }
 
@@ -42,7 +44,7 @@ public class GeneracionNubes extends Thread {
             if (!pause) {
                 try {
                     nubes.add(nube.getNube(gameView, bmpNube));
-                    sleep(3000);
+                    sleep(rnd.nextInt(1000)+1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
